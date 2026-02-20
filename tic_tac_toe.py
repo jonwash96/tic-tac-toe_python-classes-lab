@@ -33,14 +33,14 @@ class Board():
 
 	def render(self): 
 		print("\n", 
-		" ——— ——— ———\n",
-		f"| {self.rh(0)} | {self.rh(1)} | {self.rh(2)} |\n",
-		" ——— ——— ———\n",
-		f"| {self.rh(3)} | {self.rh(4)} | {self.rh(5)} |\n",
-		" ——— ——— ———\n",
-		f"| {self.rh(6)} | {self.rh(7)} | {self.rh(8)} |\n",
-		" ——— ——— ———",
-		"\n")
+			" ——— ——— ———\n",
+			f"| {self.rh(0)} | {self.rh(1)} | {self.rh(2)} |\n",
+			" ——— ——— ———\n",
+			f"| {self.rh(3)} | {self.rh(4)} | {self.rh(5)} |\n",
+			" ——— ——— ———\n",
+			f"| {self.rh(6)} | {self.rh(7)} | {self.rh(8)} |\n",
+			" ——— ——— ———",
+			"\n")
 
 	def switch_player(self): 
 		self.turn = self.p2 if self.turn == self.p1 else self.p1
