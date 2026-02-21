@@ -64,7 +64,7 @@ class Board():
 
 	def check_status(self, player):
 		if self.turns_taken == 9:
-			print("It's A draw.")
+			print("IT'S A DRAW")
 			return True
 		for combo in self.winning_combos:
 			if self.board[combo[0]] == player and self.board[combo[0]] == self.board[combo[1]] == self.board[combo[2]]:
@@ -123,7 +123,7 @@ def run():
 		case '5': p1 = '♥︎'; p2 = '♦︎'
 		case _: p1 = 'x'; p2 = 'o'
 
-	if p1 == '⋅': return
+	if p1 == '⋅' or p2 == '⋅': return
 	game = Board(p1, p2)
 
 	while True:

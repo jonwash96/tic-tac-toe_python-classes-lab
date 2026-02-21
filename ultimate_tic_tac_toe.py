@@ -198,7 +198,7 @@ class MainBoard(Board):
 				self.handle_winner(player, combo)
 				return True
 		if count == 0: 
-			print(f"\n\nIS A DRAW!\n")
+			print(f"\n\nIT'S A DRAW!\n")
 			return True
 		return False
 		
@@ -290,7 +290,7 @@ def run():
 		case '5': p1 = '♥︎'; p2 = '♦︎'
 		case _: p1 = 'x'; p2 = 'o'
 
-	if p1 == '⋅': return
+	if p1 == '⋅' or p2 == '⋅': return
 	game = MainBoard(p1, p2)
 
 	while True:
