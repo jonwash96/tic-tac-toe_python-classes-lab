@@ -57,9 +57,10 @@ class Board():
 		return True
 	
 	def handle_winner(self, player, combo):
-		print(f"\n\nBOARD {self.board_id} HAS A WINNER!")
+		print(f"\n\nBOARD {self.conv[self.board_id]} HAS A WINNER!")
 		self.render()
-		print(f"PLAYER {player} WINS BOARD {self.board_id} WITH ", combo, "\n")
+		self.board_winner = player
+		print(f"PLAYER {player} WINS BOARD {self.conv[self.board_id]} WITH ", combo, "\n")
 
 	def check_status(self, player):
 		if self.turns_taken == 9:
@@ -84,7 +85,6 @@ class Board():
 		self.turns_taken = 0
 		for idx,cell in enumerate(self.board):
 			self.board[idx] = '⋅'
-		self.turn = self.p1
 		return
 	
 	def __str__(self):
@@ -104,23 +104,21 @@ class MainBoard(Board):
 		self.active_board = None
 		self.game_winner = None
 
-	def rh(self, board, cell):
-		if self.sub_boards[board].board[cell] == '⋅': 
-			return f"{self.conv[board]}{cell}"
-		else: return f"{self.sub_boards[board].board[cell]} "
+	def rh(self, board_num, cell):
+		if self.sub_boards[board_num].board[cell] == '⋅': 
+			return f"{self.conv[board_num]}{cell}"
+		else: return f"{self.sub_boards[board_num].board[cell]} "
 
-	def rhm(self, board):
-		match self.sub_boards[board].board_status:
-			case 1: return self.sub_boards[board].board_winner
-			case -1: return "&"
-			case 0: return "⋅"
+	def rhm(self, board_num):
+		if self.board[board_num] == '⋅': return self.conv[board_num]
+		else: return self.board[board_num]
 
 	def render(self):
 		print(f"Full Board View:\n",
-		"⟔====⫧====⫧====✜✜====⫧====⫧====✜✜====⫧====⫧====⋋\n",
+		"⋌==============✜✜==============✜✜==============⋋\n",
 		f"| {self.rh(0,0)} | {self.rh(0,1)} | {self.rh(0,2)} || {self.rh(1,0)} | {self.rh(1,1)} | {self.rh(1,2)} || {self.rh(2,0)} | {self.rh(2,1)} | {self.rh(2,2)} |\n",
 		"|————✜————✜————||————✜————✜————||————✜————✜————|\n",
-		f"| {self.rh(0,3)} | {self.rh(0,4)} | {self.rh(0,5)} || {self.rh(1,3)} | {self.rh(1,1)} | {self.rh(1,4)} || {self.rh(2,3)} | {self.rh(2,4)} | {self.rh(2,5)} |\n",
+		f"| {self.rh(0,3)} | {self.rh(0,4)} | {self.rh(0,5)} || {self.rh(1,3)} | {self.rh(1,4)} | {self.rh(1,5)} || {self.rh(2,3)} | {self.rh(2,4)} | {self.rh(2,5)} |\n",
 		"|————✜————✜————||————✜————✜————||————✜————✜————|\n",
 		f"| {self.rh(0,6)} | {self.rh(0,7)} | {self.rh(0,8)} || {self.rh(1,6)} | {self.rh(1,7)} | {self.rh(1,8)} || {self.rh(2,6)} | {self.rh(2,7)} | {self.rh(2,8)} |\n",
 		"|====⫩====⫩====✜✜====⫩====⫩====✜✜====⫩====⫩====|\n",
@@ -134,20 +132,20 @@ class MainBoard(Board):
 		"|————✜————✜————||————✜————✜————||————✜————✜————|\n",
 		f"| {self.rh(6,3)} | {self.rh(6,4)} | {self.rh(6,5)} || {self.rh(7,3)} | {self.rh(7,4)} | {self.rh(7,5)} || {self.rh(8,3)} | {self.rh(8,4)} | {self.rh(8,5)} |\n",
 		"|————✜————✜————||————✜————✜————||————✜————✜————|\n",
-		f"| {self.rh(6,6)} | {self.rh(6,7)} | {self.rh(6,8)} || {self.rh(7,6)} | {self.rh(7,1)} | {self.rh(7,8)} || {self.rh(8,6)} | {self.rh(8,1)} | {self.rh(8,8)} |\n",
-		"⦜====⫨====⫨====✜✜====⫨====⫨====✜✜====⫨====⫨====⟓\n",
+		f"| {self.rh(6,6)} | {self.rh(6,7)} | {self.rh(6,8)} || {self.rh(7,6)} | {self.rh(7,1)} | {self.rh(7,8)} || {self.rh(8,6)} | {self.rh(8,7)} | {self.rh(8,8)} |\n",
+		"⦜==============✜✜==============✜✜==============⟓\n",
 	   "\n")
 		return None
 	
 	def render_mini(self):
-		print("Full Board Overview\n", 
-			"⟔===⫧===⫧===⋋\n",
+		print("Main Board Overview\n", 
+			"⋌===========⋋\n",
 			f"| {self.rhm(0)} | {self.rhm(1)} | {self.rhm(2)} |\n",
 			"|===⫩===⫩===|\n",
 			f"| {self.rhm(3)} | {self.rhm(4)} | {self.rhm(5)} |\n",
 			"|===⫩===⫩===|\n",
 			f"| {self.rhm(6)} | {self.rhm(7)} | {self.rhm(8)} |\n",
-			"⦜===⫨===⫨===⟓\n",
+			"⦜===========⟓\n",
 			"\n")
 		return None
 	
@@ -160,13 +158,17 @@ class MainBoard(Board):
 		self.active_board = self.conv.index(kwargs['letter']) if kwargs.get('letter') else kwargs['num']
 		return self.active_board
 
-	def choose_active_board(self):
+	def choose_active_board(self, render=False):
+		if render: 
+			self.render_mini()
+			print("Type 'v' to view the full board")
 		while True:
-			letter = input("Which Board would you like to play? Select a-i: ").upper()
+			letter = input(f"'{self.turn}'; Which Board would you like to play? (A-I): ").upper()
 			if letter == 'Q': exit()
+			if letter == 'V': self.render()
 			if letter in self.conv:
 				if not self.active_board: self.set_active_board(letter=letter)
-				if self.sub_boards[self.active_board].board_status == 0: break
+				if self.sub_boards[self.conv.index(letter)].board_status == 0: break
 				else: print("Choose an active board that has not been won or tied.")
 			else: print("Invalid key pressed!")
 		self.set_active_board(letter=letter)
@@ -175,38 +177,40 @@ class MainBoard(Board):
 	def determine_active_board(self, last_move, board_status):
 		if board_status == 0:
 			return self.set_active_board(num=last_move)
-		else: return self.choose_active_board()
+		else: return self.choose_active_board(True)
 
 	def handle_winner(self, player, combo):
 		print("\n\nA WINNER HATH BEEN FOUND!")
 		self.render()
 		self.render_mini()
-		print(f"PLAYER {player} WINS BOARD THE game WITH BOARDS: ", combo, "\n")
+		print(f"PLAYER {player} WINS THE GAME WITH BOARDS: ", combo, "\n")
 		return
 
-	def check_status(self, player):
+	def check_status(self, player, board_status):
+		match board_status:
+			case 1: self.board[self.active_board] = player
+			case -1: self.board[self.active_board] = "&"
 		count = 8
-		for board in self.sub_boards:
-			if board.board_status != 0: count -=1
-		if count == 0: 
-			print(f"\n\nIS A DRAW!\n")
-			return True
+		for board in self.board:
+			if board != '⋅': count -=1
 		for combo in self.winning_combos:
 			if self.board[combo[0]] == player and self.board[combo[0]] == self.board[combo[1]] == self.board[combo[2]]:
 				self.handle_winner(player, combo)
 				return True
+		if count == 0: 
+			print(f"\n\nIS A DRAW!\n")
+			return True
 		return False
 		
 	def play(self):
 		self.render()
-		print(f"'{self.turn}'s turn")
 		self.choose_active_board()
 		while not self.game_winner:
 			self.render()
 			play = self.sub_boards[self.active_board].play(self.turn)
-			if self.check_status(self.turn): break
-			self.determine_active_board(play[0], play[1])
+			if self.check_status(self.turn, play[1]): break
 			self.switch_player()
+			self.determine_active_board(play[0], play[1])
 		return self.reset()
 	
 	def reset(self):
@@ -236,7 +240,7 @@ def run():
 	   "\n")
 	print("INSTRUCTIONS\nWhen prompted, type either the number or letter of an open board or cell\n(LtR, a-i/0-8) followed by 'Enter' to mark a cell.\nType 'q' at any time to quit.\n")
 	print("Example Full Board View:\n",
-		"⟔====⫧====⫧====✜✜====⫧====⫧====✜✜====⫧====⫧====⋋\n",
+		"⋌==============✜✜==============✜✜==============⋋\n",
 		"| A0 | A1 | A2 || B0 | B1 | B2 || C0 | C1 | C2 |\n",
 		"|————✜————✜————||————✜————✜————||————✜————✜————|\n",
 		"| A3 | A4 | A5 || B3 | B4 | B5 || C3 | C4 | C5 |\n",
@@ -254,7 +258,7 @@ def run():
 		"| G3 | G4 | G5 || H3 | H4 | H5 || I3 | I4 | I5 |\n",
 		"|————✜————✜————||————✜————✜————||————✜————✜————|\n",
 		"| G6 | G7 | G8 || H6 | H7 | H8 || I6 | I7 | I8 |\n",
-		"⦜====⫨====⫨====✜✜====⫨====⫨====✜✜====⫨====⫨====⟓\n",
+		"⦜==============✜✜==============✜✜==============⟓\n",
 	   "\n")
 	print("Example Sub-Board View:\n Board Q:\n",
 		" ——— ——— ———\n",
@@ -273,7 +277,7 @@ def run():
 		"| 0: custom | 1: ♚♔ | 2: ♛♕ | 3: ♞♘ | 4: ♠︎♧ | 5: ♥︎♡ |\n",
 		" ——————————— ——————— ——————— ——————— ——————— ——————— ",
 	   "\n")
-	res = input("Type the corresponding number to choose your symbol-set OR\nPress Enter to start a new game with 'X' & 'O' or q to quit: ").lower()
+	res = input("Type the corresponding number to\nchoose your symbol-set OR\nPress Enter to start a new game\nwith 'X' & 'O' OR q to quit: ").lower()
 	match res:
 		case 'q': exit()
 		case '0': 
